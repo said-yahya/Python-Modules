@@ -9,7 +9,7 @@ class Plant():
     def get_info(self) -> None:
         print(f"{self.name}: {self.height}cm, {self.age} days old")
 
-    def grow(self):
+    def grow(self) -> None:
         self.height += 1
 
     def aging(self) -> None:
