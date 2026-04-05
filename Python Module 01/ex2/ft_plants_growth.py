@@ -1,34 +1,37 @@
 #!/usr/bin/env python3
 
 class Plant():
-    def __init__(self, name: str, height: int, age: int):
+    def __init__(self, name: str, height: float, age: int):
         self.name: str = name
-        self.height: int = height
+        self.height: float = height
         self.age: int = age
 
-    def get_info(self) -> None:
-        print(f"{self.name}: {self.height}cm, {self.age} days old")
+    def show(self) -> None:
+        print(f"{self.name}: {self.height:.1f}cm, {self.age} days old")
 
     def grow(self) -> None:
+<<<<<<< HEAD
         self.height += 1
+=======
+        self.height += 0.8
+>>>>>>> b17fbc7 (subject v3.0)
 
     def aging(self) -> None:
         self.age += 1
-        self.grow()
 
 
 def main() -> None:
     rose = Plant("Rose", 25, 30)
-    print("=== Day 1 ===")
-    rose.get_info()
-    first_age = rose.height
+    first_height: float = rose.height
 
-    for _ in range(6):
-        rose.aging()
+    for day in range(1, 8):
+        print(f"=== Day {day} ===")
+        rose.show()
+        if (day != 7):
+            rose.aging()
+            rose.grow()
 
-    print("=== Day 7 ===")
-    rose.get_info()
-    print(f"Growth this week: +{rose.height - first_age}cm")
+    print(f"Growth this week: {(rose.height - first_height):.1f}cm")
 
 
 if __name__ == "__main__":

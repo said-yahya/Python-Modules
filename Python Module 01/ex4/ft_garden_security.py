@@ -1,53 +1,67 @@
 #!/usr/bin/env python3
 
-class SecurePlant():
-    def __init__(self, name: str) -> None:
+class Plant:
+    def __init__(self, name: str, height: float, age: int) -> None:
         self.name: str = name
-        self._height: int = 0
+        self._height: float = 0.0
         self._age: int = 0
-        print(f"Created: {self.name}")
-
-    def set_height(self, height) -> None:
-        if (height < 0):
-            print(
-                    f"\nInvalid operation attempted:"
-                    f" height {height}cm [REJECTED]"
-                )
-            print("Security: Negative height rejected\n")
-        else:
+        if height >= 0:
             self._height = height
-            print(f"Height updated: {self._height}cm [OK]")
-
-    def set_age(self, age) -> None:
-        if (age < 0):
-            print(f"\nInvalid operation attempted: age {age} days [REJECTED]")
-            print("Security: Negative age rejected\n")
-        else:
+        if age >= 0:
             self._age = age
-            print(f"Age updated: {self._age} days [OK]")
+        print(
+                f"Plant created: {self.name}: "
+                f"{self._height:.1f}cm, {self._age} days old\n"
+            )
 
-    def get_height(self) -> int:
+    def set_height(self, height: float) -> None:
+        if height < 0:
+            print(f"\n{self.name}: Error, height can't be negative")
+            print("Height update rejected")
+        else:
+            if self._height != height:
+                print(f"Height updated: {height:.1f}cm")
+            self._height = height
+
+    def set_age(self, age: int) -> None:
+        if age < 0:
+            print(f"\n{self.name}: Error, age can't be negative")
+            print("Age update rejected")
+        elif self._age > age:
+            print(f"{self.name}: Error, age can't decrease")
+            print("Age update rejected")
+        else:
+            if self._age != age:
+                print(f"Age updated: {age}")
+            self._age = age
+
+    def get_height(self) -> float:
         return self._height
 
     def get_age(self) -> int:
         return self._age
 
+    def show(self) -> None:
+        print(
+                f"{self.name}: {self.get_height():.1f}cm, "
+                f"{self.get_age()} days old"
+            )
+
 
 def main() -> None:
     print("=== Garden Security System ===")
+    rose = Plant("Rose", 15.0, 10)
 
-    rose = SecurePlant("Rose")
-
-    rose.set_height(25)
+    rose.set_height(25.0)
     rose.set_age(30)
 
-    rose.set_height(-5)
+    rose.set_height(-5.0)
+    rose.set_age(-1)
 
-    curr_name: str = rose.name
-    curr_h: int = rose.get_height()
-    curr_a: int = rose.get_age()
-
-    print(f"Current plant: {curr_name} ({curr_h}cm, {curr_a} days)")
+    print(
+            f"\nCurrent state: {rose.name}: {rose.get_height():.1f}cm, "
+            f"{rose.get_age()} days old"
+        )
 
 
 if __name__ == "__main__":
