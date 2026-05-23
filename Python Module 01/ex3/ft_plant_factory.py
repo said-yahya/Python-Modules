@@ -19,21 +19,12 @@ class Plant():
 
 
 def main() -> None:
-    count: int = 0
-
     print("=== Plant Factory Output ===")
-    plants: list[Plant] = [
-        Plant("Rose", 25.0, 30),
-        Plant("Oak", 200.0, 365),
-        Plant("Cactus", 5.0, 90),
-        Plant("Sunflower", 80.0, 45),
-        Plant("Fern", 15.0, 120)
-    ]
-
-    for _ in plants:
-        count += 1
-
-    print(f"\nTotal plants created: {count}")
+    Plant("Rose", 25.0, 30),
+    Plant("Oak", 200.0, 365),
+    Plant("Cactus", 5.0, 90),
+    Plant("Sunflower", 80.0, 45),
+    Plant("Fern", 15.0, 120)
 
 
 if __name__ == "__main__":

@@ -10,11 +10,7 @@ class Plant():
         print(f"{self.name}: {self.height:.1f}cm, {self.age} days old")
 
     def grow(self) -> None:
-<<<<<<< HEAD
-        self.height += 1
-=======
         self.height += 0.8
->>>>>>> b17fbc7 (subject v3.0)
 
     def aging(self) -> None:
         self.age += 1
@@ -23,13 +19,14 @@ class Plant():
 def main() -> None:
     rose = Plant("Rose", 25, 30)
     first_height: float = rose.height
+    print("=== Garden Plant Growth ===")
+    rose.show()
 
     for day in range(1, 8):
         print(f"=== Day {day} ===")
+        rose.aging()
+        rose.grow()
         rose.show()
-        if (day != 7):
-            rose.aging()
-            rose.grow()
 
     print(f"Growth this week: {(rose.height - first_height):.1f}cm")
 
