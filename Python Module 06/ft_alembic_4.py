@@ -4,8 +4,8 @@ import alchemy
 if __name__ == "__main__":
     print("=== Alembic 4 ===")
     print("Accessing alchemy/elements.py using'from ... import ...'structure")
-    air: str = alchemy.elements.create_air()
-    print(f"Testing create_earth: {air}")
+    air: str = alchemy.create_air()
+    print(f"Testing create_air: {air}")
     print("Now show that not all functions can be reached")
     print("This will raise an exception!")
     try:

@@ -4,6 +4,6 @@ from ..elements import create_air as c_air
 
 
 def lead_to_gold() -> str:
-    output: str = (f"Recipe transmuting Lead to Gold: brew '{c_air()}'"
+    output: str = (f"Recipe transmuting Lead to Gold: brew '{c_air()}' "
                    f"and '{p.strength_potion()}' mixed with '{c_fire()}'")
-    return (output)
+    return output
