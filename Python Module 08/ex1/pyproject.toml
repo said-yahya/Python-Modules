@@ -1,0 +1,27 @@
+[tool.poetry]
+package-mode = false
+
+[project]
+name = "ex1"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "ysaikhuj"}
+]
+requires-python = ">=3.14"
+dependencies = [
+    "pandas (>=3.0.3,<4.0.0)",
+    "numpy (>=2.5.1,<3.0.0)",
+    "matplotlib (>=3.11.0,<4.0.0)",
+    "pandas-stubs>=3.0.3.260530"
+]
+
+[dependency-groups]
+dev = [
+    "mypy (>=2.1.0,<3.0.0)",
+    "flake8 (>=7.3.0,<8.0.0)"
+]
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

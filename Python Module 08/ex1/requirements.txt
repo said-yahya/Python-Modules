@@ -1,0 +1,6 @@
+numpy==2.5.0
+pandas==3.0.3
+pandas-stubs==3.0.3.260530
+matplotlib==3.11.0
+mypy==2.1.0
+flake8==7.3.0
