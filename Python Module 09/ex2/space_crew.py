@@ -59,7 +59,7 @@ class SpaceMission(BaseModel):
     budget_millions: float = Field(..., ge=1.0, le=10000.0)
 
     @model_validator(mode='after')
-    def mission_validation_rules(self) -> SpaceMission:
+    def mission_validation_rules(self) -> 'SpaceMission':
         errors: list[InitErrorDetails] = []
         if not self.mission_id.startswith("M"):
             errors.append(InitErrorDetails(
@@ -109,16 +109,17 @@ def main() -> None:
     if missions_path.exists():
         with open(missions_path, "r", encoding="utf-8") as f:
             missions_list = json.load(f)
-            
-        print(f"Loaded {len(missions_list)} complete missions from generator.\n")
+
+        print(f"Loaded {len(missions_list)} complete missions from generator.")
         for data in missions_list:
             try:
                 mission = SpaceMission(**data)
-                print(f" Valid mission approved for launch:")
+                print("\n Valid mission approved for launch:")
                 print(f"   Name:        {mission.mission_name}")
                 print(f"   ID:          {mission.mission_id}")
                 print(f"   Destination: {mission.destination}")
-                print(f"   Crew size:   {len(mission.crew)} active specialists")
+                print(f"   Crew size:   {len(mission.crew)} active "
+                      "specialists")
                 print(f"   Budget:      ${mission.budget_millions}M")
                 print("   Crew roster:")
                 for member in mission.crew:
@@ -132,13 +133,13 @@ def main() -> None:
 
     print("\n" + "=" * 60)
     print("Testing expected complex validation failures (Manual simulation):")
-    
+
     bad_crew = [
         CrewMember(member_id="CM999", name="Inactive Cadet", rank=Rank.cadet,
                    age=19, specialization="Training", years_experience=0,
                    is_active=False)
     ]
-    
+
     try:
         SpaceMission(
             mission_id="INVALID_ID",

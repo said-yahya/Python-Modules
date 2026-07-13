@@ -92,7 +92,6 @@ def main() -> None:
 
     print("-" * 50)
 
-
     print("Testing expected business logic validation errors:")
     if invalid_path.exists():
         with open(invalid_path, "r", encoding="utf-8") as f:
@@ -104,7 +103,7 @@ def main() -> None:
                 print(f"Failure: Invalid contact {data.get('contact_id')} "
                       "passed!")
             except ValidationError as e:
-                print(f"Caught expected custom error:")
+                print("Caught expected custom error:")
                 for error in e.errors():
                     clean_msg = error['msg'].replace("Value error, ", "")
                     print(f"   Field {error['loc']}: {clean_msg}")
