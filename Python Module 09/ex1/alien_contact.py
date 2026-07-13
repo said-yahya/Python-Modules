@@ -26,6 +26,8 @@ except ImportError:
 from enum import Enum
 from datetime import datetime
 from typing import Optional
+import json
+from pathlib import Path
 
 
 class ContactType(str, Enum):
@@ -67,52 +69,48 @@ class AlienContact(BaseModel):
 
 
 def main() -> None:
-    print("Alien Contact Log Validation")
-    print("======================================")
+    print("Alien Contact Log Validation via JSON Files")
+    print("=" * 50)
 
-    try:
-        valid_report = AlienContact(
-            contact_id="AC_2024_001",
-            timestamp=datetime.fromisoformat("2026-07-12T05:00:00"),
-            location="Area 51, Nevada",
-            contact_type=ContactType.radio,
-            signal_strength=8.5,
-            duration_minutes=45,
-            witness_count=5,
-            message_received="Greetings from Zeta Reticuli",
-            is_verified=False
-        )
-        print("Valid contact report:")
-        print(f"ID: {valid_report.contact_id}")
-        print(f"Type: {valid_report.contact_type.value}")
-        print(f"Location: {valid_report.location}")
-        print(f"Signal: {valid_report.signal_strength}/10")
-        print(f"Duration: {valid_report.duration_minutes} minutes")
-        print(f"Witnesses: {valid_report.witness_count}")
-        if valid_report.message_received:
-            print(f"Message: '{valid_report.message_received}'")
+    valid_path = Path("generated_data/alien_contacts.json")
+    invalid_path = Path("generated_data/invalid_contacts.json")
 
-    except ValidationError as e:
-        print(f"Unexpected error validation: {e}")
+    if valid_path.exists():
+        with open(valid_path, "r", encoding="utf-8") as f:
+            contacts_list = json.load(f)
 
-    print("======================================")
-    print("Expected validation error:")
+        print(f"Loaded {len(contacts_list)} contact logs from generator.")
+        for data in contacts_list:
+            try:
+                contact = AlienContact(**data)
+                print(f"Valid contact: {contact.contact_id} | Type: "
+                      f"{contact.contact_type.value}")
+            except ValidationError as e:
+                print(f"Unexpected error on valid contact: {e}")
+    else:
+        print(f"File not found: {valid_path}. Run data_exporter.py first!")
 
-    try:
-        AlienContact(
-            contact_id="AC_2026_002",
-            timestamp=datetime.now(),
-            location="Secret Base",
-            contact_type=ContactType.telepathic,
-            signal_strength=4.0,
-            duration_minutes=10,
-            witness_count=1,
-            message_received="Mind meld complete",
-            is_verified=False
-        )
-    except ValidationError as e:
-        for error in e.errors():
-            print(error['msg'].replace("Value error, ", ""))
+    print("-" * 50)
+
+
+    print("Testing expected business logic validation errors:")
+    if invalid_path.exists():
+        with open(invalid_path, "r", encoding="utf-8") as f:
+            invalid_list = json.load(f)
+
+        for data in invalid_list:
+            try:
+                AlienContact(**data)
+                print(f"Failure: Invalid contact {data.get('contact_id')} "
+                      "passed!")
+            except ValidationError as e:
+                print(f"Caught expected custom error:")
+                for error in e.errors():
+                    clean_msg = error['msg'].replace("Value error, ", "")
+                    print(f"   Field {error['loc']}: {clean_msg}")
+
+    else:
+        print(f"File not found: {invalid_path}")
 
 
 if __name__ == "__main__":

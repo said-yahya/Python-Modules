@@ -26,6 +26,8 @@ except ImportError:
 
 from enum import Enum
 from datetime import datetime
+import json
+from pathlib import Path
 
 
 class Rank(str, Enum):
@@ -99,66 +101,60 @@ class SpaceMission(BaseModel):
 
 
 def main() -> None:
-    print("Space Mission Crew Validation")
-    print("======================================")
+    print("Space Mission Crew Validation via JSON Files")
+    print("=" * 60)
 
-    sarah = CrewMember(
-        member_id="C001", name="Sarah Connor", rank=Rank.commander,
-        age=45, specialization="Mission Command", years_experience=15)
-    john = CrewMember(
-        member_id="C002", name="John Smith", rank=Rank.lieutenant,
-        age=32, specialization="Navigation", years_experience=6)
-    alice = CrewMember(
-        member_id="C003", name="Alice Johnson", rank=Rank.officer,
-        age=28, specialization="Engineering", years_experience=3)
+    missions_path = Path("generated_data/space_missions.json")
 
-    try:
-        valid_mission = SpaceMission(
-            mission_id="M2024_MARS",
-            mission_name="Mars Colony Establishment",
-            destination="Mars",
-            launch_date=datetime.fromisoformat("2026-07-20T08:00:00"),
-            duration_days=900,
-            crew=[sarah, john, alice],
-            budget_millions=2500.0
-        )
+    if missions_path.exists():
+        with open(missions_path, "r", encoding="utf-8") as f:
+            missions_list = json.load(f)
+            
+        print(f"Loaded {len(missions_list)} complete missions from generator.\n")
+        for data in missions_list:
+            try:
+                mission = SpaceMission(**data)
+                print(f" Valid mission approved for launch:")
+                print(f"   Name:        {mission.mission_name}")
+                print(f"   ID:          {mission.mission_id}")
+                print(f"   Destination: {mission.destination}")
+                print(f"   Crew size:   {len(mission.crew)} active specialists")
+                print(f"   Budget:      ${mission.budget_millions}M")
+                print("   Crew roster:")
+                for member in mission.crew:
+                    print(f"     - {member.name:<18} ({member.rank:<11}) | "
+                          f"Spec: {member.specialization}")
+                print("-" * 60)
+            except ValidationError as e:
+                print(f" Unexpected error in generated mission dataset: {e}")
+    else:
+        print(f" File not found: {missions_path}. Run data_exporter.py first!")
 
-        print("Valid mission created:")
-        print(f"Mission: {valid_mission.mission_name}")
-        print(f"ID: {valid_mission.mission_id}")
-        print(f"Destination: {valid_mission.destination}")
-        print(f"Duration: {valid_mission.duration_days} days")
-        print(f"Budget: ${valid_mission.budget_millions}M")
-        print(f"Crew size: {len(valid_mission.crew)}")
-        print("Crew members:")
-        for m in valid_mission.crew:
-            print(f"  {m.name:<15} ({m.rank:<11}) {m.specialization}")
-
-    except ValidationError as e:
-        for error in e.errors():
-            print(error['msg'].replace("Value error, ", ""))
-
-    print("======================================")
-    print("Expected validation error:")
-
-    cadet_bob = CrewMember(
-        member_id="C004", name="Bob Evans", rank=Rank.cadet,
-        age=20, specialization="Engineering", years_experience=0
-    )
-
+    print("\n" + "=" * 60)
+    print("Testing expected complex validation failures (Manual simulation):")
+    
+    bad_crew = [
+        CrewMember(member_id="CM999", name="Inactive Cadet", rank=Rank.cadet,
+                   age=19, specialization="Training", years_experience=0,
+                   is_active=False)
+    ]
+    
     try:
         SpaceMission(
-            mission_id="M2026_MOON",
-            mission_name="Lunar Training Operations",
-            destination="Moon",
-            launch_date=datetime.fromisoformat("2026-08-15T12:00:00"),
-            duration_days=30,
-            crew=[john, cadet_bob],
-            budget_millions=150.0
+            mission_id="INVALID_ID",
+            mission_name="Broken Mission",
+            destination="Unknown",
+            launch_date=datetime.now(),
+            duration_days=500,
+            crew=bad_crew,
+            budget_millions=500.0
         )
     except ValidationError as e:
+        print(" Successfully caught multiple nested block errors "
+              "simultaneously:")
         for error in e.errors():
-            print(error['msg'].replace("Value error, ", ""))
+            clean_msg = error['msg'].replace("Value error, ", "")
+            print(f"    Location {error['loc']}: {clean_msg}")
 
 
 if __name__ == "__main__":

@@ -26,6 +26,8 @@ except ImportError:
 
 from datetime import datetime
 from typing import Optional
+import json
+from pathlib import Path
 
 
 class SpaceStation(BaseModel):
@@ -40,52 +42,44 @@ class SpaceStation(BaseModel):
 
 
 def main() -> None:
-    print("Space Station Data Validation")
-    print("-" * 30)
+    print("Space Station Data Validation via JSON Files")
+    print("=" * 40)
 
-    try:
-        valid_station = SpaceStation(
-            station_id="ISS001",
-            name="International Space Station",
-            crew_size=6,
-            power_level=85.5,
-            oxygen_level=92.3,
-            last_maintenance=datetime.fromisoformat("2026-07-09T12:00:00"),
-            is_operational=True,
-            notes="Routine systems check nominal."
-        )
-        print("Valid station created:")
-        print(f"ID: {valid_station.station_id}")
-        print(f"Name: {valid_station.name}")
-        print(f"Crew: {valid_station.crew_size} people")
-        print(f"Power: {valid_station.power_level}%")
-        print(f"Oxygen: {valid_station.oxygen_level}%")
-        if valid_station.is_operational:
-            print("Status: Operational")
-        else:
-            print("Status: Non-Operational")
-        if valid_station.notes:
-            print(f"Notes: {valid_station.notes}")
+    valid_path = Path("../generated_data/space_stations.json")
+    invalid_path = Path("../generated_data/invalid_stations.json")
 
-    except ValidationError as e:
-        print(f"Unexpected error creating valid station: {e}")
+    if valid_path.exists():
+        with open(valid_path, "r", encoding="utf-8") as f:
+            stations_list = json.load(f)
 
-    print("-" * 30)
+        print(f"Loaded {len(stations_list)} stations from generator.")
+        for data in stations_list:
+            try:
+                station = SpaceStation(**data)
+                print(f" Successfully validated: {station.name} "
+                      f"({station.station_id})")
+            except ValidationError as e:
+                print(f" Unexpected error on valid data: {e}")
+    else:
+        print(f" File not found: {valid_path}. Run data_exporter.py first!")
 
-    print("Expected validation error:")
-    try:
-        SpaceStation(
-            station_id="MIR002",
-            name="Deep Space Outpost",
-            crew_size=25,
-            power_level=99.0,
-            oxygen_level=95.0,
-            last_maintenance=datetime.now(),
-        )
-    except ValidationError as e:
-        for error in e.errors():
-            if error['loc'] == ('crew_size',):
-                print(error['msg'])
+    print("-" * 40)
+
+    print("Testing expected validation errors:")
+    if invalid_path.exists():
+        with open(invalid_path, "r", encoding="utf-8") as f:
+            invalid_list = json.load(f)
+
+        for data in invalid_list:
+            try:
+                SpaceStation(**data)
+                print(" Failure: Invalid data passed validation unchecked!")
+            except ValidationError as e:
+                print(" Caught expected error(s):")
+                for error in e.errors():
+                    print(f"   Field {error['loc']}: {error['msg']}")
+    else:
+        print(f" File not found: {invalid_path}")
 
 
 if __name__ == "__main__":
